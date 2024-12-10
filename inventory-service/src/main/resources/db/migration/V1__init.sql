@@ -1,0 +1,5 @@
+CREATE TABLE inventory (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sku_code VARCHAR(255) DEFAULT NULL,
+    quantity INT(11) DEFAULT NULL
+);
