@@ -8,6 +8,6 @@ services:
       volumes:
         - ./data:/data/db
       environment:
-        MONGO_INIT_ROOT_USERNAME: root
-        MONGO_INIT_ROOT_PASSWORD: password
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: password
         MONGO_INITDB_DATABASE: product-service

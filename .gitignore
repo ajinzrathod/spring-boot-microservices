@@ -24,4 +24,14 @@ hs_err_pid*
 replay_pid*
 
 .DS_Store
+
+# Docker Storages
 product-service/data/
+
+order-service/docker/
+order-service/mysql/
+
+inventory-service/docker/
+
+api-gateway/docker/
+api-gateway/volume-data/

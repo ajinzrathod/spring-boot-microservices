@@ -9,7 +9,6 @@ import org.springframework.web.servlet.function.*;
 @SuppressWarnings("unused")
 @Configuration
 public class Routes {
-
     // Functional Endpoint Programming Model:
     // https://docs.spring.io/spring-framework/reference/web/webflux-functional.html
     @Bean
