@@ -2,12 +2,15 @@ package com.ajinz.microservices.order.service;
 
 import com.ajinz.microservices.order.client.InventoryClient;
 import com.ajinz.microservices.order.dto.OrderRequest;
+import com.ajinz.microservices.order.event.OrderPlacedEvent;
 import com.ajinz.microservices.order.exception.UnableToProcessOrderException;
 import com.ajinz.microservices.order.exception.ServiceUnavailableException;
 import com.ajinz.microservices.order.model.Order;
 import com.ajinz.microservices.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,6 +21,10 @@ import java.util.UUID;
 public class OrderService {
   private final OrderRepository orderRepository;
   private final InventoryClient inventoryClient;
+  private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+
+  @Value("${spring.kafka.template.default-topic}")
+  private String orderPlacedTopic;
 
   public void placeOrder(OrderRequest orderRequest) {
     Boolean inStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
@@ -40,5 +47,19 @@ public class OrderService {
 
     orderRepository.save(order);
     log.info("Order saved");
+
+    sendMessageToKafkaTopic(orderRequest, order);
+  }
+
+  private void sendMessageToKafkaTopic(OrderRequest orderRequest, Order order) {
+    OrderPlacedEvent orderPlacedEvent =
+        new OrderPlacedEvent(order.getOrderNo(), orderRequest.userDetails().email());
+    log.info(
+        "[LOG] START sending OrderPlacedEvent event {} to Kafka Topic order-placed",
+        orderPlacedEvent);
+    kafkaTemplate.send(orderPlacedTopic, orderPlacedEvent);
+    log.info(
+        "[LOG] END sending OrderPlacedEvent event {} to Kafka Topic order-placed",
+        orderPlacedEvent);
   }
 }
