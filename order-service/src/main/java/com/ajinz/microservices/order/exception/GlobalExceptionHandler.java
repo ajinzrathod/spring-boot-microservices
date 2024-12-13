@@ -14,6 +14,12 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(HttpStatus.BAD_GATEWAY.value(), exception.getMessage());
   }
 
+  @ExceptionHandler(ServiceUnavailableException.class)
+  @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+  public ErrorResponse serviceUnavailableException(Exception exception) {
+    return new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), exception.getMessage());
+  }
+
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponse handleGeneralException(Exception exception) {

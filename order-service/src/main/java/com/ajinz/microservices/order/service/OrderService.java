@@ -3,6 +3,7 @@ package com.ajinz.microservices.order.service;
 import com.ajinz.microservices.order.client.InventoryClient;
 import com.ajinz.microservices.order.dto.OrderRequest;
 import com.ajinz.microservices.order.exception.UnableToProcessOrderException;
+import com.ajinz.microservices.order.exception.ServiceUnavailableException;
 import com.ajinz.microservices.order.model.Order;
 import com.ajinz.microservices.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,10 @@ public class OrderService {
   private final InventoryClient inventoryClient;
 
   public void placeOrder(OrderRequest orderRequest) {
-    boolean inStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
+    Boolean inStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
+    if (inStock == null) {
+      throw new ServiceUnavailableException("Inventory service is down");
+    }
     if (!inStock) {
       throw new UnableToProcessOrderException(
           "Product with skuCode %s is not available for %d quantity"
