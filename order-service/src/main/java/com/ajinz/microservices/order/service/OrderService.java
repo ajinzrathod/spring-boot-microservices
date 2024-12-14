@@ -23,9 +23,6 @@ public class OrderService {
   private final InventoryClient inventoryClient;
   private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
-  @Value("${spring.kafka.template.default-topic}")
-  private String orderPlacedTopic;
-
   public void placeOrder(OrderRequest orderRequest) {
     Boolean inStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
     if (inStock == null) {
@@ -52,11 +49,15 @@ public class OrderService {
   }
 
   private void sendMessageToKafkaTopic(OrderRequest orderRequest, Order order) {
-    OrderPlacedEvent orderPlacedEvent =
-        new OrderPlacedEvent(order.getOrderNo(), orderRequest.userDetails().email());
+    OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+    orderPlacedEvent.setOrderNumber(order.getOrderNo());
+    orderPlacedEvent.setEmail(orderRequest.userDetails().email());
+    orderPlacedEvent.setFirstName(orderRequest.userDetails().firstName());
+    orderPlacedEvent.setLastName(orderRequest.userDetails().lastName());
     log.info(
         "[LOG] START sending OrderPlacedEvent event {} to Kafka Topic order-placed",
         orderPlacedEvent);
+    String orderPlacedTopic = "order-placed";
     kafkaTemplate.send(orderPlacedTopic, orderPlacedEvent);
     log.info(
         "[LOG] END sending OrderPlacedEvent event {} to Kafka Topic order-placed",

@@ -10,8 +10,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationService {
-    @KafkaListener(topics = "order-placed")
-    public void listen(OrderPlacedEvent orderPlacedEvent) {
-        log.info("[LOG] Got info from order-placed topic {}", orderPlacedEvent);
-    }
+  @KafkaListener(topics = "order-placed")
+  public void listen(OrderPlacedEvent orderPlacedEvent) {
+    log.info("[LOG] Got info from order-placed topic {}", orderPlacedEvent);
+    System.out.printf(
+        "Hi %s, Your full name is: %s %s%n",
+        orderPlacedEvent.getEmail(),
+        orderPlacedEvent.getFirstName(),
+        orderPlacedEvent.getLastName());
+  }
 }

@@ -12,11 +12,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String orderNo;
-    private String skuCode;
-    private BigDecimal price;
-    private Integer quantity;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String orderNo;
+  private String skuCode;
+  private BigDecimal price;
+  private Integer quantity;
 }
