@@ -1,6 +1,8 @@
 package com.ajinz.microservices.order.config;
 
 import com.ajinz.microservices.order.client.InventoryClient;
+import io.micrometer.observation.ObservationRegistry;
+import lombok.RequiredArgsConstructor;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
@@ -23,9 +25,11 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestClientConfig {
   @Value("${inventory.url}")
   private String inventoryServiceURL;
+  private final ObservationRegistry observationRegistry;
 
   @Bean
   public InventoryClient inventoryClient()
@@ -34,6 +38,7 @@ public class RestClientConfig {
         RestClient.builder()
             .baseUrl(inventoryServiceURL)
             .requestFactory(getClientRequestFactory())
+                .observationRegistry(observationRegistry)
             .build();
     RestClientAdapter restClientAdapter = RestClientAdapter.create(restClient);
     HttpServiceProxyFactory httpServiceProxyFactory =
