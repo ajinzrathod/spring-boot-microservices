@@ -33,5 +33,7 @@ order-service/mysql/
 
 inventory-service/docker/
 
-api-gateway/docker/
+api-gateway/docker/tempo/tempo-data/
+api-gateway/docker/keycloak/
 api-gateway/volume-data/
+
